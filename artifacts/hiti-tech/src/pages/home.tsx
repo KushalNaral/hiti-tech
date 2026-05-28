@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import logoSrc from "@assets/image_1779958981910.png";
 import { SiReact, SiNodedotjs, SiPython, SiFlutter, SiDocker, SiPostgresql, SiNextdotjs } from "react-icons/si";
-import { Cloud, ArrowRight, ArrowUpRight, Menu, X } from "lucide-react";
+import { Cloud, ArrowRight, ArrowUpRight, Menu, X, CheckCircle } from "lucide-react";
+import { useSubmitContact } from "@workspace/api-client-react";
 
 /* ─── helpers ──────────────────────────────────────────────────────── */
 
@@ -54,6 +55,14 @@ export default function Home() {
   const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
 
+  const [contactForm, setContactForm] = useState({ name: "", email: "", company: "", message: "" });
+  const [submitted, setSubmitted] = useState(false);
+  const submitContact = useSubmitContact({
+    mutation: {
+      onSuccess: () => { setSubmitted(true); setContactForm({ name: "", email: "", company: "", message: "" }); },
+    },
+  });
+
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
 
@@ -75,6 +84,9 @@ export default function Home() {
           </nav>
 
           <div className="flex items-center gap-3">
+            <a href="/dashboard" className="hidden md:inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wide">
+              Dashboard
+            </a>
             <a href="#contact" className="hidden md:inline-flex items-center gap-1.5 text-xs font-semibold text-primary-foreground bg-primary hover:bg-primary/90 transition-colors rounded-full px-4 py-2">
               Start a Project <ArrowRight className="w-3 h-3" />
             </a>
@@ -472,36 +484,52 @@ export default function Home() {
             </motion.div>
 
             {/* Right — form */}
-            <motion.form
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              onSubmit={(e) => e.preventDefault()}
-              className="lg:col-span-7 space-y-4"
-            >
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">Name</label>
-                  <input type="text" placeholder="John Doe" className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary transition-all" />
+            {submitted ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="lg:col-span-7 flex flex-col items-center justify-center gap-4 py-16 border border-border rounded-2xl bg-card"
+              >
+                <CheckCircle className="w-10 h-10 text-primary" />
+                <h3 className="text-lg font-semibold text-foreground">Message sent!</h3>
+                <p className="text-sm text-muted-foreground text-center max-w-xs">We'll get back to you within 24 hours.</p>
+                <button onClick={() => setSubmitted(false)} className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4 mt-2">Send another message</button>
+              </motion.div>
+            ) : (
+              <motion.form
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  submitContact.mutate({ data: { name: contactForm.name, email: contactForm.email, company: contactForm.company || undefined, message: contactForm.message } });
+                }}
+                className="lg:col-span-7 space-y-4"
+              >
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">Name</label>
+                    <input required type="text" value={contactForm.name} onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })} placeholder="John Doe" className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary transition-all" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">Email</label>
+                    <input required type="email" value={contactForm.email} onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })} placeholder="john@company.com" className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary transition-all" />
+                  </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">Email</label>
-                  <input type="email" placeholder="john@company.com" className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary transition-all" />
+                  <label className="block text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">Company</label>
+                  <input type="text" value={contactForm.company} onChange={(e) => setContactForm({ ...contactForm, company: e.target.value })} placeholder="Your company" className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary transition-all" />
                 </div>
-              </div>
-              <div>
-                <label className="block text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">Company</label>
-                <input type="text" placeholder="Your company" className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary transition-all" />
-              </div>
-              <div>
-                <label className="block text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">Project Details</label>
-                <textarea placeholder="What are you building? What's the timeline and budget?" className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary transition-all h-36 resize-none" />
-              </div>
-              <button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-lg h-12 text-sm font-semibold">
-                Send Message
-              </button>
-            </motion.form>
+                <div>
+                  <label className="block text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">Project Details</label>
+                  <textarea required value={contactForm.message} onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })} placeholder="What are you building? What's the timeline and budget?" className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary transition-all h-36 resize-none" />
+                </div>
+                <button type="submit" disabled={submitContact.isPending} className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-lg h-12 text-sm font-semibold disabled:opacity-60">
+                  {submitContact.isPending ? "Sending…" : "Send Message"}
+                </button>
+              </motion.form>
+            )}
           </div>
         </div>
       </section>
