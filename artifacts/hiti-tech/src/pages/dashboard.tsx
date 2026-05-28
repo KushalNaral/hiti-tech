@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@workspace/replit-auth-web";
 import {
@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, CheckCheck, Plus, Pencil, LogOut, Mail, Briefcase, Star, Zap, ArrowLeft } from "lucide-react";
+import { Trash2, CheckCheck, Plus, Pencil, LogOut, Mail, Briefcase, Star, Zap, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import logoSrc from "@assets/image_1779958981910.png";
 
 /* ─── helpers ───────────────────────────────────────────────── */
@@ -386,10 +386,117 @@ function ServicesTab() {
   );
 }
 
+/* ─── Login gate ─────────────────────────────────────────────── */
+
+function LoginGate({ onSuccess }: { onSuccess: () => void }) {
+  const [needsSetup, setNeedsSetup] = useState<boolean | null>(null);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [error, setError] = useState("");
+  const [pending, setPending] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/auth/local/status", { credentials: "include" })
+      .then((r) => r.json())
+      .then((d: { needsSetup: boolean }) => setNeedsSetup(d.needsSetup))
+      .catch(() => setNeedsSetup(false));
+  }, []);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setPending(true);
+    const endpoint = needsSetup ? "/api/auth/local/setup" : "/api/auth/local/login";
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ username, password }),
+      });
+      const body = await res.json();
+      if (!res.ok) { setError(body.error ?? "Something went wrong."); return; }
+      onSuccess();
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setPending(false);
+    }
+  }
+
+  if (needsSetup === null) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-sm text-muted-foreground">Loading…</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
+      <div className="w-full max-w-sm">
+        <div className="flex flex-col items-center mb-8">
+          <img src={logoSrc} alt="HITI TECH" className="w-12 h-12 rounded-full ring-1 ring-border mb-4" />
+          <h1 className="text-xl font-bold text-foreground">{needsSetup ? "Create admin account" : "Dashboard"}</h1>
+          <p className="text-xs text-muted-foreground mt-1">
+            {needsSetup ? "First time setup — choose your admin credentials." : "Sign in to manage your site."}
+          </p>
+        </div>
+
+        <form onSubmit={submit} className="space-y-4">
+          <div>
+            <label className="block text-xs font-mono uppercase tracking-widest text-muted-foreground mb-1.5">Username</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              autoFocus
+              autoComplete="username"
+              placeholder="admin"
+              className="w-full bg-card border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-mono uppercase tracking-widest text-muted-foreground mb-1.5">Password</label>
+            <div className="relative">
+              <input
+                type={showPw ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete={needsSetup ? "new-password" : "current-password"}
+                placeholder={needsSetup ? "Min. 8 characters" : "••••••••"}
+                className="w-full bg-card border border-border rounded-lg px-3 py-2.5 pr-10 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPw((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+
+          {error && (
+            <p className="text-xs text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2">{error}</p>
+          )}
+
+          <Button type="submit" disabled={pending} className="w-full">
+            {pending ? (needsSetup ? "Creating…" : "Signing in…") : (needsSetup ? "Create account" : "Sign in")}
+          </Button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Main dashboard ─────────────────────────────────────────── */
 
 export default function Dashboard() {
-  const { user, isLoading, isAuthenticated, login, logout } = useAuth();
+  const { user, isLoading, isAuthenticated, logout } = useAuth();
 
   if (isLoading) {
     return (
@@ -400,18 +507,7 @@ export default function Dashboard() {
   }
 
   if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6">
-        <img src={logoSrc} alt="HITI TECH" className="w-14 h-14 rounded-full ring-1 ring-border" />
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-2">Dashboard</h1>
-          <p className="text-sm text-muted-foreground mb-8">Sign in to manage your site content.</p>
-          <Button onClick={login} size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 px-8">
-            Log In
-          </Button>
-        </div>
-      </div>
-    );
+    return <LoginGate onSuccess={() => window.location.reload()} />;
   }
 
   const initials = [user?.firstName?.[0], user?.lastName?.[0]].filter(Boolean).join("").toUpperCase() || "?";
