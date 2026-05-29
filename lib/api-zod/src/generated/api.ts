@@ -77,6 +77,77 @@ export const SubmitContactBody = zod.object({
 
 
 /**
+ * @summary List visible services
+ */
+export const GetPublicServicesResponseItem = zod.object({
+  "id": zod.number(),
+  "number": zod.string(),
+  "title": zod.string(),
+  "description": zod.string(),
+  "order": zod.number(),
+  "visible": zod.boolean(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+export const GetPublicServicesResponse = zod.array(GetPublicServicesResponseItem)
+
+
+/**
+ * @summary List visible portfolio projects
+ */
+export const GetPublicProjectsResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "category": zod.string(),
+  "description": zod.string(),
+  "tags": zod.array(zod.string()),
+  "order": zod.number(),
+  "visible": zod.boolean(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+export const GetPublicProjectsResponse = zod.array(GetPublicProjectsResponseItem)
+
+
+/**
+ * @summary Get a single portfolio project
+ */
+export const GetPublicProjectParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetPublicProjectResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "category": zod.string(),
+  "description": zod.string(),
+  "tags": zod.array(zod.string()),
+  "order": zod.number(),
+  "visible": zod.boolean(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary List visible testimonials
+ */
+export const GetPublicTestimonialsResponseItem = zod.object({
+  "id": zod.number(),
+  "quote": zod.string(),
+  "author": zod.string(),
+  "role": zod.string(),
+  "initials": zod.string(),
+  "featured": zod.boolean(),
+  "order": zod.number(),
+  "visible": zod.boolean(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+export const GetPublicTestimonialsResponse = zod.array(GetPublicTestimonialsResponseItem)
+
+
+/**
  * @summary List all contact messages
  */
 export const ListMessagesResponseItem = zod.object({

@@ -520,6 +520,314 @@ export const useSubmitContact = <TError = ErrorType<ErrorEnvelope>,
       return useMutation(getSubmitContactMutationOptions(options));
     }
 
+export const getGetPublicServicesUrl = () => {
+
+
+
+
+  return `/api/public/services`
+}
+
+/**
+ * @summary List visible services
+ */
+export const getPublicServices = async ( options?: RequestInit): Promise<Service[]> => {
+
+  return customFetch<Service[]>(getGetPublicServicesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPublicServicesQueryKey = () => {
+    return [
+    `/api/public/services`
+    ] as const;
+    }
+
+
+export const getGetPublicServicesQueryOptions = <TData = Awaited<ReturnType<typeof getPublicServices>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPublicServices>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPublicServicesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPublicServices>>> = ({ signal }) => getPublicServices({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPublicServices>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPublicServicesQueryResult = NonNullable<Awaited<ReturnType<typeof getPublicServices>>>
+export type GetPublicServicesQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List visible services
+ */
+
+export function useGetPublicServices<TData = Awaited<ReturnType<typeof getPublicServices>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPublicServices>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPublicServicesQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetPublicProjectsUrl = () => {
+
+
+
+
+  return `/api/public/projects`
+}
+
+/**
+ * @summary List visible portfolio projects
+ */
+export const getPublicProjects = async ( options?: RequestInit): Promise<PortfolioProject[]> => {
+
+  return customFetch<PortfolioProject[]>(getGetPublicProjectsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPublicProjectsQueryKey = () => {
+    return [
+    `/api/public/projects`
+    ] as const;
+    }
+
+
+export const getGetPublicProjectsQueryOptions = <TData = Awaited<ReturnType<typeof getPublicProjects>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPublicProjects>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPublicProjectsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPublicProjects>>> = ({ signal }) => getPublicProjects({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPublicProjects>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPublicProjectsQueryResult = NonNullable<Awaited<ReturnType<typeof getPublicProjects>>>
+export type GetPublicProjectsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List visible portfolio projects
+ */
+
+export function useGetPublicProjects<TData = Awaited<ReturnType<typeof getPublicProjects>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPublicProjects>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPublicProjectsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetPublicProjectUrl = (id: number,) => {
+
+
+
+
+  return `/api/public/projects/${id}`
+}
+
+/**
+ * @summary Get a single portfolio project
+ */
+export const getPublicProject = async (id: number, options?: RequestInit): Promise<PortfolioProject> => {
+
+  return customFetch<PortfolioProject>(getGetPublicProjectUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPublicProjectQueryKey = (id: number,) => {
+    return [
+    `/api/public/projects/${id}`
+    ] as const;
+    }
+
+
+export const getGetPublicProjectQueryOptions = <TData = Awaited<ReturnType<typeof getPublicProject>>, TError = ErrorType<ErrorEnvelope>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPublicProject>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPublicProjectQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPublicProject>>> = ({ signal }) => getPublicProject(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPublicProject>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPublicProjectQueryResult = NonNullable<Awaited<ReturnType<typeof getPublicProject>>>
+export type GetPublicProjectQueryError = ErrorType<ErrorEnvelope>
+
+
+/**
+ * @summary Get a single portfolio project
+ */
+
+export function useGetPublicProject<TData = Awaited<ReturnType<typeof getPublicProject>>, TError = ErrorType<ErrorEnvelope>>(
+ id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPublicProject>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPublicProjectQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetPublicTestimonialsUrl = () => {
+
+
+
+
+  return `/api/public/testimonials`
+}
+
+/**
+ * @summary List visible testimonials
+ */
+export const getPublicTestimonials = async ( options?: RequestInit): Promise<Testimonial[]> => {
+
+  return customFetch<Testimonial[]>(getGetPublicTestimonialsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPublicTestimonialsQueryKey = () => {
+    return [
+    `/api/public/testimonials`
+    ] as const;
+    }
+
+
+export const getGetPublicTestimonialsQueryOptions = <TData = Awaited<ReturnType<typeof getPublicTestimonials>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPublicTestimonials>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPublicTestimonialsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPublicTestimonials>>> = ({ signal }) => getPublicTestimonials({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPublicTestimonials>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPublicTestimonialsQueryResult = NonNullable<Awaited<ReturnType<typeof getPublicTestimonials>>>
+export type GetPublicTestimonialsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List visible testimonials
+ */
+
+export function useGetPublicTestimonials<TData = Awaited<ReturnType<typeof getPublicTestimonials>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPublicTestimonials>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPublicTestimonialsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
 export const getListMessagesUrl = () => {
 
 

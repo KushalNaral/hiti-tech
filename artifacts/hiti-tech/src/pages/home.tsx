@@ -3,7 +3,12 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import logoSrc from "@assets/image_1779958981910.png";
 import { SiReact, SiNodedotjs, SiPython, SiFlutter, SiDocker, SiPostgresql, SiNextdotjs } from "react-icons/si";
 import { Cloud, ArrowRight, ArrowUpRight, Menu, X, CheckCircle } from "lucide-react";
-import { useSubmitContact } from "@workspace/api-client-react";
+import {
+  useSubmitContact,
+  useGetPublicServices,
+  useGetPublicProjects,
+  useGetPublicTestimonials,
+} from "@workspace/api-client-react";
 
 /* ─── helpers ──────────────────────────────────────────────────────── */
 
@@ -62,6 +67,15 @@ export default function Home() {
       onSuccess: () => { setSubmitted(true); setContactForm({ name: "", email: "", company: "", message: "" }); },
     },
   });
+
+  const { data: services = [] } = useGetPublicServices();
+  const { data: projects = [] } = useGetPublicProjects();
+  const { data: testimonials = [] } = useGetPublicTestimonials();
+
+  const featuredProject = projects[0];
+  const moreProjects = projects.slice(1);
+  const featuredTestimonial = testimonials.find((t) => t.featured) ?? testimonials[0];
+  const otherTestimonials = testimonials.filter((t) => t.id !== featuredTestimonial?.id).slice(0, 2);
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
@@ -141,7 +155,7 @@ export default function Home() {
             <span className="text-xs font-mono text-primary tracking-widest uppercase">Software · Since 2026</span>
           </motion.div>
 
-          {/* headline — editorial stacked type */}
+          {/* headline */}
           <div className="overflow-hidden mb-6">
             <motion.h1
               initial={{ y: "100%" }}
@@ -180,7 +194,7 @@ export default function Home() {
             </motion.div>
           </div>
 
-          {/* bottom row */}
+          {/* bottom stats row */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -222,32 +236,33 @@ export default function Home() {
             <h2 className="text-xs font-mono uppercase tracking-widest text-muted-foreground">
               01 — What We Do
             </h2>
-            <span className="text-xs text-muted-foreground">6 specialisms</span>
+            <span className="text-xs text-muted-foreground">
+              {services.length > 0 ? `${services.length} specialisms` : ""}
+            </span>
           </div>
 
           <div className="divide-y divide-border">
-            {[
-              { n: "01", title: "Custom Software", desc: "Bespoke systems engineered for your exact business logic, scale, and long-term maintainability — no templates." },
-              { n: "02", title: "Web Applications", desc: "High-performance, accessible web platforms on modern React and server-side frameworks, optimised from first load." },
-              { n: "03", title: "Mobile Applications", desc: "Native-quality iOS and Android experiences — built with Flutter or React Native, shipped on schedule." },
-              { n: "04", title: "Cloud Solutions", desc: "Resilient infrastructure and serverless architectures on AWS. Migrations handled with zero-downtime guarantees." },
-              { n: "05", title: "IT Consulting", desc: "Strategic technical guidance that future-proofs your digital operations — from team structure to architecture decisions." },
-              { n: "06", title: "UI/UX Design", desc: "Conversion-focused, pixel-precise interfaces that feel native and responsive across every breakpoint." },
-            ].map((s, i) => (
-              <motion.div
-                key={s.n}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.4, delay: i * 0.04, ease: [0.22, 1, 0.36, 1] }}
-                className="group grid grid-cols-[48px_1fr_auto] md:grid-cols-[80px_1fr_1fr_auto] items-center gap-6 py-7 cursor-default hover:bg-card/60 -mx-6 px-6 transition-colors"
-              >
-                <span className="text-xs font-mono text-muted-foreground">{s.n}</span>
-                <h3 className="text-xl md:text-2xl font-semibold text-foreground">{s.title}</h3>
-                <p className="hidden md:block text-sm text-muted-foreground leading-relaxed max-w-sm">{s.desc}</p>
-                <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:text-primary transition-all" />
-              </motion.div>
-            ))}
+            {services.length === 0 ? (
+              <div className="py-16 text-center text-sm text-muted-foreground font-mono">
+                Services coming soon.
+              </div>
+            ) : (
+              services.map((s, i) => (
+                <motion.div
+                  key={s.id}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ duration: 0.4, delay: i * 0.04, ease: [0.22, 1, 0.36, 1] }}
+                  className="group grid grid-cols-[48px_1fr_auto] md:grid-cols-[80px_1fr_1fr_auto] items-center gap-6 py-7 cursor-default hover:bg-card/60 -mx-6 px-6 transition-colors"
+                >
+                  <span className="text-xs font-mono text-muted-foreground">{s.number}</span>
+                  <h3 className="text-xl md:text-2xl font-semibold text-foreground">{s.title}</h3>
+                  <p className="hidden md:block text-sm text-muted-foreground leading-relaxed max-w-sm">{s.description}</p>
+                  <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:text-primary transition-all" />
+                </motion.div>
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -258,67 +273,78 @@ export default function Home() {
 
           <div className="flex items-baseline justify-between mb-16 border-b border-border pb-6">
             <h2 className="text-xs font-mono uppercase tracking-widest text-muted-foreground">02 — Selected Work</h2>
-            <a href="#" className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4 decoration-border">
-              All projects
+            <a href="#work" className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4 decoration-border">
+              {projects.length > 0 ? `${projects.length} projects` : ""}
             </a>
           </div>
 
-          {/* Asymmetric grid: 1 large + 3 smaller */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+          {projects.length === 0 ? (
+            <div className="py-16 text-center text-sm text-muted-foreground font-mono">
+              Portfolio projects coming soon.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
 
-            {/* Large featured card */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="md:col-span-7 group rounded-2xl border border-border bg-background overflow-hidden cursor-pointer hover:border-primary/40 transition-colors"
-            >
-              <div className="h-64 bg-card flex items-center justify-center border-b border-border relative overflow-hidden">
-                <span className="font-black text-[120px] leading-none text-border group-hover:text-primary/20 transition-colors select-none">A</span>
-                <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full border border-border bg-background flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <ArrowUpRight className="w-4 h-4 text-primary" />
-                </div>
-              </div>
-              <div className="p-7">
-                <p className="text-xs font-mono text-primary mb-2 uppercase tracking-widest">Financial Technology</p>
-                <h3 className="text-2xl font-bold text-foreground mb-3">Aura FinTech</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-5">Core banking infrastructure processing $10M+ in daily transactions with sub-50ms API response times and five-nines uptime.</p>
-                <div className="flex flex-wrap gap-2">
-                  {["React", "Node.js", "AWS", "PostgreSQL"].map(t => (
-                    <span key={t} className="text-xs font-mono text-muted-foreground bg-secondary border border-border rounded px-2.5 py-1">{t}</span>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Right column — 3 stacked smaller */}
-            <div className="md:col-span-5 flex flex-col gap-4">
-              {[
-                { init: "N", cat: "Healthcare", name: "Nexus Health", desc: "HIPAA-compliant telemedicine platform. 10k+ consultations/month via WebRTC.", tags: ["Next.js", "Python", "Docker"] },
-                { init: "Q", cat: "Supply Chain", name: "Quantum Logistics", desc: "Global freight tracking across 80+ countries with real-time geospatial data.", tags: ["React Native", "Go", "PostgreSQL"] },
-                { init: "V", cat: "Enterprise SaaS", name: "Verge CRM", desc: "AI-powered CRM for Fortune 500 sales teams.", tags: ["Vue", "Python", "GCP"] },
-              ].map((p, i) => (
-                <motion.div
-                  key={p.name}
-                  initial={{ opacity: 0, y: 16 }}
+              {/* Large featured card */}
+              {featuredProject && (
+                <motion.a
+                  href={`/projects/${featuredProject.id}`}
+                  initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.08 }}
-                  className="group flex-1 rounded-2xl border border-border bg-background overflow-hidden cursor-pointer hover:border-primary/40 transition-colors flex"
+                  transition={{ duration: 0.5 }}
+                  className={`group rounded-2xl border border-border bg-background overflow-hidden hover:border-primary/40 transition-colors block ${moreProjects.length > 0 ? "md:col-span-7" : "md:col-span-12"}`}
                 >
-                  <div className="w-14 md:w-16 bg-card border-r border-border flex items-center justify-center shrink-0">
-                    <span className="font-black text-3xl text-border group-hover:text-primary/30 transition-colors select-none">{p.init}</span>
+                  <div className="h-64 bg-card flex items-center justify-center border-b border-border relative overflow-hidden">
+                    <span className="font-black text-[120px] leading-none text-border group-hover:text-primary/20 transition-colors select-none">
+                      {featuredProject.name[0]}
+                    </span>
+                    <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full border border-border bg-background flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <ArrowUpRight className="w-4 h-4 text-primary" />
+                    </div>
                   </div>
-                  <div className="p-4 flex flex-col justify-center min-h-[100px]">
-                    <p className="text-xs font-mono text-primary mb-1 uppercase tracking-widest">{p.cat}</p>
-                    <h3 className="text-sm font-semibold text-foreground mb-1">{p.name}</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">{p.desc}</p>
+                  <div className="p-7">
+                    <p className="text-xs font-mono text-primary mb-2 uppercase tracking-widest">{featuredProject.category}</p>
+                    <h3 className="text-2xl font-bold text-foreground mb-3">{featuredProject.name}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed mb-5">{featuredProject.description}</p>
+                    {featuredProject.tags && featuredProject.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {featuredProject.tags.map((t) => (
+                          <span key={t} className="text-xs font-mono text-muted-foreground bg-secondary border border-border rounded px-2.5 py-1">{t}</span>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                </motion.div>
-              ))}
+                </motion.a>
+              )}
+
+              {/* Right column — smaller cards */}
+              {moreProjects.length > 0 && (
+                <div className="md:col-span-5 flex flex-col gap-4">
+                  {moreProjects.slice(0, 3).map((p, i) => (
+                    <motion.a
+                      key={p.id}
+                      href={`/projects/${p.id}`}
+                      initial={{ opacity: 0, y: 16 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: i * 0.08 }}
+                      className="group flex-1 rounded-2xl border border-border bg-background overflow-hidden hover:border-primary/40 transition-colors flex"
+                    >
+                      <div className="w-14 md:w-16 bg-card border-r border-border flex items-center justify-center shrink-0">
+                        <span className="font-black text-3xl text-border group-hover:text-primary/30 transition-colors select-none">{p.name[0]}</span>
+                      </div>
+                      <div className="p-4 flex flex-col justify-center min-h-[100px]">
+                        <p className="text-xs font-mono text-primary mb-1 uppercase tracking-widest">{p.category}</p>
+                        <h3 className="text-sm font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">{p.name}</h3>
+                        <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">{p.description}</p>
+                      </div>
+                    </motion.a>
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -330,7 +356,6 @@ export default function Home() {
             <h2 className="text-xs font-mono uppercase tracking-widest text-muted-foreground">03 — Our Story</h2>
           </div>
 
-          {/* Pull quote style */}
           <div className="grid lg:grid-cols-2 gap-16 md:gap-24 items-start">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -395,53 +420,66 @@ export default function Home() {
             <h2 className="text-xs font-mono uppercase tracking-widest text-muted-foreground">05 — Client Feedback</h2>
           </div>
 
-          {/* Featured large + 2 compact */}
-          <div className="grid md:grid-cols-12 gap-6">
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="md:col-span-7 rounded-2xl border border-primary/30 bg-card p-10"
-            >
-              <p className="text-primary text-xs font-mono uppercase tracking-widest mb-6">Featured</p>
-              <p className="text-2xl md:text-3xl font-semibold text-foreground leading-snug mb-8">
-                "HITI TECH delivered our core product three months ahead of schedule. Their engineering standards are genuinely unmatched."
-              </p>
-              <div className="flex items-center gap-4 pt-6 border-t border-border">
-                <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-sm font-bold text-primary">SJ</div>
-                <div>
-                  <div className="text-sm font-semibold text-foreground">Sarah Jenkins</div>
-                  <div className="text-xs text-muted-foreground">CTO, Aura FinTech</div>
-                </div>
-              </div>
-            </motion.div>
-
-            <div className="md:col-span-5 flex flex-col gap-4">
-              {[
-                { initials: "MC", name: "Michael Chen", role: "VP Engineering, Nexus Health", quote: "The precision and strategic insight they brought to our cloud migration was extraordinary. Zero surprises." },
-                { initials: "ER", name: "Elena Rodriguez", role: "Founder, Quantum Logistics", quote: "They don't just write code — they build scalable businesses. The best technical partners we've had." },
-              ].map((t, i) => (
+          {testimonials.length === 0 ? (
+            <div className="py-16 text-center text-sm text-muted-foreground font-mono">
+              Client testimonials coming soon.
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-12 gap-6">
+              {/* Featured */}
+              {featuredTestimonial && (
                 <motion.div
-                  key={t.name}
-                  initial={{ opacity: 0, y: 12 }}
+                  initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.1 }}
-                  className="flex-1 rounded-2xl border border-border bg-card p-7"
+                  transition={{ duration: 0.5 }}
+                  className={`rounded-2xl border border-primary/30 bg-card p-10 ${otherTestimonials.length > 0 ? "md:col-span-7" : "md:col-span-12"}`}
                 >
-                  <p className="text-sm text-foreground leading-relaxed mb-5">"{t.quote}"</p>
-                  <div className="flex items-center gap-3 pt-4 border-t border-border">
-                    <div className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center text-xs font-bold text-primary">{t.initials}</div>
+                  <p className="text-primary text-xs font-mono uppercase tracking-widest mb-6">
+                    {featuredTestimonial.featured ? "Featured" : "Client"}
+                  </p>
+                  <p className="text-2xl md:text-3xl font-semibold text-foreground leading-snug mb-8">
+                    "{featuredTestimonial.quote}"
+                  </p>
+                  <div className="flex items-center gap-4 pt-6 border-t border-border">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-sm font-bold text-primary">
+                      {featuredTestimonial.initials}
+                    </div>
                     <div>
-                      <div className="text-xs font-semibold text-foreground">{t.name}</div>
-                      <div className="text-xs text-muted-foreground">{t.role}</div>
+                      <div className="text-sm font-semibold text-foreground">{featuredTestimonial.author}</div>
+                      <div className="text-xs text-muted-foreground">{featuredTestimonial.role}</div>
                     </div>
                   </div>
                 </motion.div>
-              ))}
+              )}
+
+              {otherTestimonials.length > 0 && (
+                <div className={`flex flex-col gap-4 ${featuredTestimonial ? "md:col-span-5" : "md:col-span-12 md:grid md:grid-cols-2"}`}>
+                  {otherTestimonials.map((t, i) => (
+                    <motion.div
+                      key={t.id}
+                      initial={{ opacity: 0, y: 12 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: i * 0.1 }}
+                      className="flex-1 rounded-2xl border border-border bg-card p-7"
+                    >
+                      <p className="text-sm text-foreground leading-relaxed mb-5">"{t.quote}"</p>
+                      <div className="flex items-center gap-3 pt-4 border-t border-border">
+                        <div className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center text-xs font-bold text-primary">
+                          {t.initials}
+                        </div>
+                        <div>
+                          <div className="text-xs font-semibold text-foreground">{t.author}</div>
+                          <div className="text-xs text-muted-foreground">{t.role}</div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
+          )}
         </div>
       </section>
 

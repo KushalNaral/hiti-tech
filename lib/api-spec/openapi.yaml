@@ -14,6 +14,8 @@ tags:
     description: Browser authentication endpoints.
   - name: contact
     description: Public contact form submission.
+  - name: public
+    description: Public read-only content endpoints.
   - name: dashboard
     description: Protected dashboard CRUD endpoints.
 paths:
@@ -124,6 +126,76 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
+
+  /public/services:
+    get:
+      tags: [public]
+      operationId: getPublicServices
+      summary: List visible services
+      responses:
+        '200':
+          description: Visible services ordered by display order.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Service'
+
+  /public/projects:
+    get:
+      tags: [public]
+      operationId: getPublicProjects
+      summary: List visible portfolio projects
+      responses:
+        '200':
+          description: Visible projects ordered by display order.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PortfolioProject'
+
+  /public/projects/{id}:
+    get:
+      tags: [public]
+      operationId: getPublicProject
+      summary: Get a single portfolio project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Project details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioProject'
+        '404':
+          description: Not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /public/testimonials:
+    get:
+      tags: [public]
+      operationId: getPublicTestimonials
+      summary: List visible testimonials
+      responses:
+        '200':
+          description: Visible testimonials ordered by display order.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Testimonial'
 
   /dashboard/messages:
     get:
