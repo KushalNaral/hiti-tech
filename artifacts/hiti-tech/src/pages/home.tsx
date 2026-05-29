@@ -2,13 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import logoSrc from "@assets/image_1779958981910.png";
 import { SiReact, SiNodedotjs, SiPython, SiFlutter, SiDocker, SiPostgresql, SiNextdotjs } from "react-icons/si";
-import { Cloud, ArrowRight, ArrowUpRight, Menu, X, CheckCircle } from "lucide-react";
+import { Cloud, ArrowRight, ArrowUpRight, Menu, X, CheckCircle, Sun, Moon } from "lucide-react";
 import {
   useSubmitContact,
   useGetPublicServices,
   useGetPublicProjects,
   useGetPublicTestimonials,
 } from "@workspace/api-client-react";
+import { useTheme } from "@/contexts/theme";
 
 /* ─── helpers ──────────────────────────────────────────────────────── */
 
@@ -54,6 +55,7 @@ const navLinks = [
 /* ─── main component ────────────────────────────────────────────────── */
 
 export default function Home() {
+  const { theme, toggleTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
@@ -97,8 +99,15 @@ export default function Home() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
-            <a href="/dashboard" className="hidden md:inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wide">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-card border border-transparent hover:border-border transition-all"
+            >
+              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+            <a href="/dashboard" className="hidden md:inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wide ml-1">
               Dashboard
             </a>
             <a href="#contact" className="hidden md:inline-flex items-center gap-1.5 text-xs font-semibold text-primary-foreground bg-primary hover:bg-primary/90 transition-colors rounded-full px-4 py-2">

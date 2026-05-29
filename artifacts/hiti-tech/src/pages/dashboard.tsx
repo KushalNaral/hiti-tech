@@ -14,8 +14,9 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Mail, Briefcase, Star, Zap, ArrowLeft, LogOut, Plus, Pencil, Trash2,
-  Eye, EyeOff, X, AlertCircle, Menu,
+  Eye, EyeOff, X, AlertCircle, Menu, Sun, Moon,
 } from "lucide-react";
+import { useTheme } from "@/contexts/theme";
 import logoSrc from "@assets/image_1779958981910.png";
 
 /* ─── Types ──────────────────────────────────────────────────── */
@@ -758,6 +759,7 @@ const NAV_ITEMS: { id: Section; icon: typeof Mail; label: string }[] = [
 
 export default function Dashboard() {
   const { user, isLoading, isAuthenticated, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [section, setSection] = useState<Section>("messages");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -849,6 +851,13 @@ export default function Dashboard() {
             <p className="text-xs font-medium text-foreground truncate">{user?.firstName ?? "Admin"}</p>
           </div>
           <div className="flex gap-2">
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+              className="flex items-center justify-center w-8 shrink-0 border border-border rounded-lg py-1.5 text-muted-foreground hover:text-foreground hover:border-foreground/25 transition-colors"
+            >
+              {theme === "dark" ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+            </button>
             <a
               href="/"
               className="flex-1 flex items-center justify-center gap-1.5 text-xs text-muted-foreground hover:text-foreground border border-border hover:border-foreground/25 rounded-lg py-1.5 transition-colors"
