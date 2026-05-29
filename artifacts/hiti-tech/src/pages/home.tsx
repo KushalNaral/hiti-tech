@@ -338,7 +338,7 @@ export default function Home() {
                     <h3 className="text-2xl font-bold text-foreground mb-3">{featuredProject.name}</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed mb-6">{featuredProject.description}</p>
 
-                    <div className="flex">
+                   <div className="flex justify-between">
 
                       {featuredProject.tags && featuredProject.tags.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-6">
