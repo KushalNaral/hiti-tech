@@ -74,10 +74,10 @@ export default function Home() {
   const { data: projects = [] } = useGetPublicProjects();
   const { data: testimonials = [] } = useGetPublicTestimonials();
 
-  const featuredProject = projects[0];
-  const moreProjects = projects.slice(1);
-  const featuredTestimonial = testimonials.find((t) => t.featured) ?? testimonials[0];
-  const otherTestimonials = testimonials.filter((t) => t.id !== featuredTestimonial?.id).slice(0, 2);
+  const featuredProject = projects?.[0];
+  const moreProjects = projects?.slice(1);
+  const featuredTestimonial = testimonials?.find((t) => t.featured) ?? testimonials[0];
+  const otherTestimonials = testimonials?.filter((t) => t.id !== featuredTestimonial?.id).slice(0, 2);
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
@@ -256,7 +256,7 @@ export default function Home() {
                 Services coming soon.
               </div>
             ) : (
-              services.map((s, i) => (
+              services?.map((s, i) => (
                 <motion.div
                   key={s.id}
                   initial={{ opacity: 0, y: 16 }}
