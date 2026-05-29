@@ -1,8 +1,28 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import logoSrc from "@assets/image_1779958981910.png";
-import { SiReact, SiNodedotjs, SiPython, SiFlutter, SiDocker, SiPostgresql, SiNextdotjs } from "react-icons/si";
-import { Cloud, ArrowRight, ArrowUpRight, Menu, X, CheckCircle, Sun, Moon } from "lucide-react";
+import {
+  SiReact,
+  SiPhp,
+  SiAngular,
+  SiCypress,
+  SiNodedotjs,
+  SiFlutter,
+  SiDocker,
+  SiJenkins,
+} from "react-icons/si";
+import { FaAws, FaJava, FaVuejs} from "react-icons/fa";
+
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Menu,
+  X,
+  CheckCircle,
+  Sun,
+  Moon,
+} from "lucide-react";
+
 import {
   useSubmitContact,
   useGetPublicServices,
@@ -35,14 +55,17 @@ function Marquee({ children, speed = 40 }: { children: React.ReactNode; speed?: 
 }
 
 const techItems = [
+  { icon: FaJava, name: "Java" },
   { icon: SiReact, name: "React" },
-  { icon: SiNextdotjs, name: "Next.js" },
-  { icon: SiNodedotjs, name: "Node.js" },
-  { icon: SiPython, name: "Python" },
-  { icon: SiPostgresql, name: "PostgreSQL" },
-  { icon: Cloud, name: "AWS" },
-  { icon: SiDocker, name: "Docker" },
+  { icon: SiPhp, name: "PHP" },
+  { icon: SiAngular, name: "Angular" },
+  { icon: FaVuejs, name: "Vue" },
+  { icon: SiCypress, name: "Cypress" },
+  { icon: SiNodedotjs, name: "Node JS" },
   { icon: SiFlutter, name: "Flutter" },
+  { icon: SiDocker, name: "Docker" },
+  { icon: SiJenkins, name: "Jenkins" },
+  { icon: FaAws, name: "AWS" },
 ];
 
 const navLinks = [
@@ -211,9 +234,9 @@ export default function Home() {
             className="mt-20 pt-8 border-t border-border flex flex-wrap gap-8 md:gap-16"
           >
             {[
-              { n: "50+", l: "Projects" },
+              { n: "5+", l: "Projects" },
               { n: "98%", l: "Satisfaction" },
-              { n: "12+", l: "Countries" },
+              { n: "10+", l: "Team Members" },
               { n: "99.9%", l: "Uptime SLA" },
             ].map((s) => (
               <div key={s.n}>
@@ -515,9 +538,9 @@ export default function Home() {
               </h3>
               <div className="space-y-4 divide-y divide-border border-y border-border py-6 mb-8">
                 {[
-                  { k: "Email", v: "hello@hititech.io" },
+                  { k: "Email", v: "lightsuraj129@gmail.com" },
                   { k: "Response", v: "Within 24 hours" },
-                  { k: "Timezone", v: "Global, async-first" },
+                  { k: "Contact No.", v: "9705686051,9843686052" },
                 ].map((r) => (
                   <div key={r.k} className="flex justify-between items-baseline pt-4 first:pt-0">
                     <span className="text-xs font-mono uppercase tracking-widest text-muted-foreground">{r.k}</span>

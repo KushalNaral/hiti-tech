@@ -17,6 +17,7 @@ export const portfolioProjectsTable = pgTable("portfolio_projects", {
   name: varchar("name", { length: 255 }).notNull(),
   category: varchar("category", { length: 255 }).notNull(),
   description: text("description").notNull(),
+  link: varchar("link"),
   tags: text("tags").array().notNull().default([]),
   order: integer("order").notNull().default(0),
   visible: boolean("visible").notNull().default(true),
