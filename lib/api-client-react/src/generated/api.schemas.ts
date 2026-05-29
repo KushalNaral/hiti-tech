@@ -58,6 +58,7 @@ export interface PortfolioProject {
   name: string;
   category: string;
   description: string;
+  link: string;
   tags: string[];
   order: number;
   visible: boolean;
@@ -71,6 +72,7 @@ export interface UpsertPortfolioProjectRequest {
   /** @minLength 1 */
   category: string;
   /** @minLength 1 */
+  link: string | null;
   description: string;
   tags?: string[];
   order?: number;

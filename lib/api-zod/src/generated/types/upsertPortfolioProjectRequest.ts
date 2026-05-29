@@ -13,6 +13,7 @@ export interface UpsertPortfolioProjectRequest {
   category: string;
   /** @minLength 1 */
   description: string;
+  link: string | null;
   tags?: string[];
   order?: number;
   visible?: boolean;

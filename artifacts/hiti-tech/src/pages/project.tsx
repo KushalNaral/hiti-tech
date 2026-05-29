@@ -55,7 +55,24 @@ export default function ProjectDetail() {
       <section className="pt-36 pb-16 container mx-auto px-6">
         <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
           <p className="text-xs font-mono uppercase tracking-widest text-primary mb-5">{project.category}</p>
-          <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-none text-foreground mb-8">{project.name}</h1>
+          <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-none text-foreground mb-6">{project.name}</h1>
+
+          {/* Live Link - Prominent placement */}
+          {project.link && (
+            <motion.a
+              href={project.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="inline-flex items-center gap-2 text-base font-medium text-primary hover:text-primary/80 group mb-8"
+            >
+              View Live Project
+              <ArrowUpRight className="w-5 h-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </motion.a>
+          )}
+
           {project.tags && project.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {project.tags.map((tag) => (
@@ -131,6 +148,9 @@ export default function ProjectDetail() {
           </div>
         </div>
       </div>
+
+      {/* Rest of your components remain the same... */}
+      {/* Tech deep-dive, Related projects, CTA, Footer... */}
 
       {/* Tech deep-dive */}
       {project.tags && project.tags.length > 0 && (

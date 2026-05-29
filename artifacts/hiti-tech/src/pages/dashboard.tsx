@@ -311,8 +311,8 @@ function MessagesSection() {
 
 /* ─── Projects ───────────────────────────────────────────────── */
 
-type ProjErrors = { name?: string; category?: string; description?: string };
-const defaultProject: UpsertPortfolioProjectRequest = { name: "", category: "", description: "", tags: [], visible: true };
+type ProjErrors = { name?: string; category?: string; description?: string, link?: string };
+const defaultProject: UpsertPortfolioProjectRequest = { name: "", category: "", link: "", description: "", tags: [], visible: true };
 
 function validateProject(f: UpsertPortfolioProjectRequest): ProjErrors {
   const e: ProjErrors = {};
@@ -335,7 +335,7 @@ function ProjectsSection() {
   const [errors, setErrors] = useState<ProjErrors>({});
 
   function open_(p?: PortfolioProject) {
-    if (p) { setForm({ name: p.name, category: p.category, description: p.description, tags: p.tags ?? [], order: p.order, visible: p.visible }); setPanel(p.id); }
+    if (p) { setForm({ name: p.name, category: p.category, description: p.description, tags: p.tags ?? [], order: p.order, visible: p.visible, link: p.link }); setPanel(p.id); }
     else { setForm(defaultProject); setPanel("new"); }
     setErrors({});
   }
@@ -403,6 +403,9 @@ function ProjectsSection() {
         </FormField>
         <FormField label="Description" error={errors.description} required>
           <textarea value={form.description} onChange={(e) => patch("description", e.target.value)} placeholder="What did you build and what impact did it have?" rows={4} className={cls(inputCls(errors.description), "resize-none")} />
+        </FormField>
+          <FormField label="Link" error={errors.category}>
+          <input type="text" value={form.link??""} onChange={(e) => patch("link", e.target.value)} placeholder="http://www.xyz.com" className={inputCls(errors.link)} />
         </FormField>
         <FormField label="Tags">
           <TagInput tags={form.tags ?? []} onChange={(v) => patch("tags", v)} />

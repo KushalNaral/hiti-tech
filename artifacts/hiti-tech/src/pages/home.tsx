@@ -11,7 +11,7 @@ import {
   SiDocker,
   SiJenkins,
 } from "react-icons/si";
-import { FaAws, FaJava, FaVuejs} from "react-icons/fa";
+import { FaAws, FaJava, FaVuejs } from "react-icons/fa";
 
 import {
   ArrowRight,
@@ -305,9 +305,6 @@ export default function Home() {
 
           <div className="flex items-baseline justify-between mb-16 border-b border-border pb-6">
             <h2 className="text-xs font-mono uppercase tracking-widest text-muted-foreground">02 — Selected Work</h2>
-            <a href="#work" className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4 decoration-border">
-              {projects.length > 0 ? `${projects.length} projects` : ""}
-            </a>
           </div>
 
           {projects.length === 0 ? (
@@ -335,17 +332,37 @@ export default function Home() {
                       <ArrowUpRight className="w-4 h-4 text-primary" />
                     </div>
                   </div>
+
                   <div className="p-7">
                     <p className="text-xs font-mono text-primary mb-2 uppercase tracking-widest">{featuredProject.category}</p>
                     <h3 className="text-2xl font-bold text-foreground mb-3">{featuredProject.name}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed mb-5">{featuredProject.description}</p>
-                    {featuredProject.tags && featuredProject.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {featuredProject.tags.map((t) => (
-                          <span key={t} className="text-xs font-mono text-muted-foreground bg-secondary border border-border rounded px-2.5 py-1">{t}</span>
-                        ))}
-                      </div>
-                    )}
+                    <p className="text-sm text-muted-foreground leading-relaxed mb-6">{featuredProject.description}</p>
+
+                    <div className="flex">
+
+                      {featuredProject.tags && featuredProject.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-6">
+                          {featuredProject.tags.map((t) => (
+                            <span key={t} className="text-xs font-mono text-muted-foreground bg-secondary border border-border rounded px-2.5 py-1">{t}</span>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Visit Link */}
+                      {featuredProject.link && (
+                        <a
+                          href={featuredProject.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          Visit Project
+                          <ArrowUpRight className="w-4 h-4" />
+                        </a>
+                      )}
+
+                    </div>
                   </div>
                 </motion.a>
               )}
@@ -366,11 +383,27 @@ export default function Home() {
                       <div className="w-14 md:w-16 bg-card border-r border-border flex items-center justify-center shrink-0">
                         <span className="font-black text-3xl text-border group-hover:text-primary/30 transition-colors select-none">{p.name[0]}</span>
                       </div>
-                      <div className="p-4 flex flex-col justify-center min-h-[100px]">
+                      <div className="p-4 flex flex-col justify-center min-h-[100px] flex-1">
                         <p className="text-xs font-mono text-primary mb-1 uppercase tracking-widest">{p.category}</p>
                         <h3 className="text-sm font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">{p.name}</h3>
-                        <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">{p.description}</p>
+                        <div className="flex">
+                          <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2 mb-3">{p.description}</p>
+
+                          {/* Visit Link for small cards */}
+                          {p.link && (
+                            <a
+                              href={p.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-1 mt-auto"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Visit <ArrowUpRight className="w-3 h-3" />
+                            </a>
+                          )}
+                        </div>
                       </div>
+
                     </motion.a>
                   ))}
                 </div>
