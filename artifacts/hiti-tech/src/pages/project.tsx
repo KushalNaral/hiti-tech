@@ -9,7 +9,10 @@ export default function ProjectDetail() {
   const projectId = parseInt(id ?? "0", 10);
 
   const { data: project, isLoading, error } = useGetPublicProject(projectId, {
-    query: { enabled: !isNaN(projectId) && projectId > 0 },
+    query: { 
+      queryKey: [`/api/public/projects/${projectId}`],
+      enabled: !isNaN(projectId) && projectId > 0 
+    },
   });
   const { data: allProjects = [] } = useGetPublicProjects();
 
