@@ -1,0 +1,41 @@
+services:
+  db-migrate:
+    build:
+      context: .
+      target: builder
+    container_name: hiti-migrate
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgres://postgres:iloveu@master-database:5432/hiti_tech}
+    command: pnpm --filter @workspace/db run push
+
+  api-server:
+    build:
+      context: .
+      target: api-runner
+    container_name: hiti-api
+    environment:
+      PORT: 8080
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL:-postgres://postgres:iloveu@master-database:5432/hiti_tech}
+      SESSION_SECRET: ${SESSION_SECRET:-default_secret_replace_this_with_a_secure_random_string_in_production}
+    expose:
+      - "8080"
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+
+  web:
+    build:
+      context: .
+      target: web-runner
+    container_name: hiti-web
+    ports:
+      - "${WEB_PORT:-80}:80"
+    depends_on:
+      - api-server
+    restart: always
+
+networks:
+  default:
+    name: master-database_default
+    external: true
